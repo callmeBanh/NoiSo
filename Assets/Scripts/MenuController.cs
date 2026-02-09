@@ -13,7 +13,7 @@ public class MenuController : MonoBehaviour
         
         Time.timeScale = 1; 
         
-        SceneManager.LoadScene("StartGame");
+        LoadingController.LoadScene("StartGame");
     }
 
     public void QuitGame()

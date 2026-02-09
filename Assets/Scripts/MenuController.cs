@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour
 {
@@ -7,9 +8,23 @@ public class MenuController : MonoBehaviour
     {
         LoadingController.LoadScene("testScene");
     }
+    public void BackToMainMenu()
+    {
+        
+        Time.timeScale = 1; 
+        
+        SceneManager.LoadScene("StartGame");
+    }
 
     public void QuitGame()
     {
+  
+        Debug.Log("Đã bấm thoát game!");
+
         Application.Quit();
+
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #endif
     }
 }

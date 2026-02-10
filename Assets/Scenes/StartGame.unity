@@ -376,6 +376,7 @@ GameObject:
   - component: {fileID: 672970924}
   - component: {fileID: 672970923}
   - component: {fileID: 672970926}
+  - component: {fileID: 672970927}
   m_Layer: 5
   m_Name: exitButton
   m_TagString: Untagged
@@ -508,6 +509,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fabd8e3359dc86f45ad7eb03e2babb9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MenuController
+--- !u!114 &672970927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 672970921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c8458b72e8257c45a9260713e6a41e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::buttonAnimation
 --- !u!1 &938674165
 GameObject:
   m_ObjectHideFlags: 0
@@ -678,6 +691,7 @@ GameObject:
   - component: {fileID: 1163599326}
   - component: {fileID: 1163599325}
   - component: {fileID: 1163599328}
+  - component: {fileID: 1163599329}
   m_Layer: 5
   m_Name: soundButton
   m_TagString: Untagged
@@ -813,6 +827,18 @@ MonoBehaviour:
   icon: {fileID: 1163599326}
   soundOnSprite: {fileID: 5854932867712282046, guid: 373d4460c302f9348a8efad23d58d570, type: 3}
   soundOffSprite: {fileID: 7677291332502580796, guid: 373d4460c302f9348a8efad23d58d570, type: 3}
+--- !u!114 &1163599329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1163599323}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c8458b72e8257c45a9260713e6a41e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::buttonAnimation
 --- !u!1 &1637294435
 GameObject:
   m_ObjectHideFlags: 0
@@ -826,6 +852,7 @@ GameObject:
   - component: {fileID: 1637294438}
   - component: {fileID: 1637294437}
   - component: {fileID: 1637294440}
+  - component: {fileID: 1637294441}
   m_Layer: 5
   m_Name: playButton
   m_TagString: Untagged
@@ -958,6 +985,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fabd8e3359dc86f45ad7eb03e2babb9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MenuController
+--- !u!114 &1637294441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1637294435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c8458b72e8257c45a9260713e6a41e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::buttonAnimation
 --- !u!1 &1938211726
 GameObject:
   m_ObjectHideFlags: 0

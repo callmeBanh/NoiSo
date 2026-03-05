@@ -11,18 +11,41 @@ public class MatchGameManager : MonoBehaviour
 
     [Header("Giao diện UI")]
     public TMP_Text timerText;        
+    public GameObject tutorialPopup;  // Biến mới: Kéo Panel TutorialPopup vào đây
 
     // Biến nội bộ
     private LineRenderer currentLine;
     private ConnectNode startNode;
     private int matchCount = 0;
     private bool isGameOver = false;
+    private bool isPlaying = false;   // Biến mới: Kiểm tra xem đang chơi hay đang xem hướng dẫn
+
+    void Start()
+    {
+        // Khi mới vào game, hiện Popup lên và CHƯA cho chơi
+        if (tutorialPopup != null)
+        {
+            tutorialPopup.SetActive(true);
+        }
+        isPlaying = false; 
+    }
+
+    // Hàm mới: Được gọi khi bấm nút "Chơi ngay" trên Popup
+    public void StartGameAfterTutorial()
+    {
+        if (tutorialPopup != null)
+        {
+            tutorialPopup.SetActive(false); // Ẩn Popup đi
+        }
+        isPlaying = true; // Bắt đầu tính giờ và cho phép nối dây
+    }
 
     void Update()
     {
-        if (isGameOver) return;
+        // Nếu game kết thúc HOẶC CHƯA BẮT ĐẦU (đang xem popup) -> Không làm gì cả
+        if (isGameOver || !isPlaying) return; 
 
-        // 1. TÍNH GIỜ
+        // 1. TÍNH GIỜ (Chỉ chạy khi isPlaying = true)
         timeLimit -= Time.deltaTime;
         if (timerText != null) timerText.text = Mathf.Ceil(timeLimit).ToString(); 
 
@@ -36,36 +59,23 @@ public class MatchGameManager : MonoBehaviour
 
     void StartConnect()
     {
-        // CÁCH MỚI: Dùng Ray từ Camera chiếu thẳng vào thế giới 2D
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.GetRayIntersection(ray);
         
-        // Kiểm tra va chạm
         if (hit.collider != null && hit.collider.CompareTag("Anchor"))
         {
             startNode = hit.collider.GetComponent<ConnectNode>();
-            
-            // Kiểm tra xem đã nối chưa
             if (startNode.isMatched) return;
 
-            Debug.Log("Đã bấm trúng: " + hit.collider.gameObject.name); // Kiểm tra xem có nhận không
-
-            // Tạo dây
             currentLine = Instantiate(linePrefab, transform);
             currentLine.positionCount = 2;
             currentLine.SetPosition(0, startNode.transform.position);
             currentLine.SetPosition(1, startNode.transform.position);
         }
-        else
-        {
-             // Nếu bấm trượt, log ra để biết
-             Debug.Log("Bấm trượt rồi! Hãy kiểm tra Collider."); 
-        }
     }
 
     void Drawing()
     {
-        // Cập nhật đầu dây theo chuột
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0;
         currentLine.SetPosition(1, mousePos);
@@ -75,7 +85,6 @@ public class MatchGameManager : MonoBehaviour
     {
         if (currentLine == null) return;
 
-        // CÁCH MỚI: Kiểm tra điểm thả chuột
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit = Physics2D.GetRayIntersection(ray);
         
@@ -88,28 +97,23 @@ public class MatchGameManager : MonoBehaviour
                 endNode.mathValue == startNode.mathValue &&
                 !endNode.isMatched)
             {
-                // ==> NỐI ĐÚNG
                 currentLine.SetPosition(1, endNode.transform.position);
                 startNode.isMatched = true;
                 endNode.isMatched = true;
                 
-                // Đổi màu dây thành xanh lá
                 currentLine.startColor = Color.green;
                 currentLine.endColor = Color.green;
 
                 currentLine = null; 
                 matchCount++;      
                 CheckWinCondition();
-                Debug.Log("Nối thành công!");
                 return;
             }
         }
 
-        // ==> NỐI SAI
         Destroy(currentLine.gameObject); 
         currentLine = null;
         startNode = null;
-        Debug.Log("Nối sai hoặc thả ra ngoài!");
     }
 
     void CheckWinCondition()

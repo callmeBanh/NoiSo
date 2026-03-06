@@ -4,54 +4,78 @@ using UnityEngine.SceneManagement;
 
 public class MatchGameManager : MonoBehaviour
 {
+    [Header("Quản lý Màn chơi")]
+    public GameObject[] levels;      // Kéo các Level_1, Level_2 vào đây
+    public int[] pairsPerLevel;      // Điền số cặp tương ứng của mỗi màn (Ví dụ: 3, 4)
+    private int currentLevelIndex = 0; // Đang ở màn số mấy (0 là màn 1)
+
     [Header("Cài đặt Game")]
     public LineRenderer linePrefab;   
-    public float timeLimit = 30f;     
-    public int totalPairs = 3;        
+    public float timeLimitPerLevel = 30f; // Đổi tên: Thời gian cho MỖI màn    
 
     [Header("Giao diện UI")]
     public TMP_Text timerText;        
-    public GameObject tutorialPopup;  // Biến mới: Kéo Panel TutorialPopup vào đây
+    public GameObject tutorialPopup;  
 
     // Biến nội bộ
+    private float currentTime;
     private LineRenderer currentLine;
     private ConnectNode startNode;
     private int matchCount = 0;
     private bool isGameOver = false;
-    private bool isPlaying = false;   // Biến mới: Kiểm tra xem đang chơi hay đang xem hướng dẫn
+    private bool isPlaying = false;   
 
     void Start()
     {
-        // Khi mới vào game, hiện Popup lên và CHƯA cho chơi
-        if (tutorialPopup != null)
-        {
-            tutorialPopup.SetActive(true);
-        }
+        if (tutorialPopup != null) tutorialPopup.SetActive(true);
         isPlaying = false; 
+        
+        // Vừa vào game thì tải màn đầu tiên
+        LoadLevel(0); 
     }
 
-    // Hàm mới: Được gọi khi bấm nút "Chơi ngay" trên Popup
     public void StartGameAfterTutorial()
     {
-        if (tutorialPopup != null)
+        if (tutorialPopup != null) tutorialPopup.SetActive(false);
+        isPlaying = true; 
+    }
+
+    // --- HÀM MỚI: TẢI MÀN CHƠI ---
+    void LoadLevel(int index)
+    {
+        // 1. Tắt tất cả các màn đi
+        foreach (GameObject level in levels)
         {
-            tutorialPopup.SetActive(false); // Ẩn Popup đi
+            if (level != null) level.SetActive(false);
         }
-        isPlaying = true; // Bắt đầu tính giờ và cho phép nối dây
+
+        // 2. Chỉ bật màn hiện tại lên
+        if (levels[index] != null) levels[index].SetActive(true);
+
+        // 3. Xóa các sợi dây cũ của màn trước (nếu có)
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // 4. Reset lại đồng hồ và điểm số
+        currentTime = timeLimitPerLevel;
+        matchCount = 0;
+        currentLevelIndex = index;
+        isGameOver = false;
+
+        if (timerText != null) timerText.text = Mathf.Ceil(currentTime).ToString();
     }
 
     void Update()
     {
-        // Nếu game kết thúc HOẶC CHƯA BẮT ĐẦU (đang xem popup) -> Không làm gì cả
         if (isGameOver || !isPlaying) return; 
 
-        // 1. TÍNH GIỜ (Chỉ chạy khi isPlaying = true)
-        timeLimit -= Time.deltaTime;
-        if (timerText != null) timerText.text = Mathf.Ceil(timeLimit).ToString(); 
+        currentTime -= Time.deltaTime;
+        if (timerText != null) timerText.text = Mathf.Ceil(currentTime).ToString(); 
 
-        if (timeLimit <= 0) GameOver(false); 
+        if (currentTime <= 0) GameOver(false); 
 
-        // 2. XỬ LÝ CHUỘT
         if (Input.GetMouseButtonDown(0)) StartConnect();
         if (currentLine != null) Drawing();
         if (Input.GetMouseButtonUp(0)) EndConnect();
@@ -116,14 +140,41 @@ public class MatchGameManager : MonoBehaviour
         startNode = null;
     }
 
+    // --- CẬP NHẬT HÀM KIỂM TRA THẮNG ---
     void CheckWinCondition()
     {
-        if (matchCount >= totalPairs) GameOver(true);
+        // Lấy số cặp yêu cầu của màn HIỆN TẠI
+        int requiredPairs = pairsPerLevel[currentLevelIndex]; 
+
+        if (matchCount >= requiredPairs)
+        {
+            NextLevel(); // Chuyển sang màn tiếp theo
+        }
+    }
+
+    // --- HÀM MỚI: CHUYỂN MÀN ---
+    void NextLevel()
+    {
+        currentLevelIndex++; // Tăng số thứ tự màn lên 1
+
+        // Nếu vẫn còn màn trong danh sách
+        if (currentLevelIndex < levels.Length)
+        {
+            Debug.Log("Chúc mừng! Chuyển sang màn: " + (currentLevelIndex + 1));
+            LoadLevel(currentLevelIndex); // Bật màn mới
+        }
+        else
+        {
+            // Nếu đã vượt qua toàn bộ các màn -> Chiến thắng game
+            Debug.Log("ĐÃ PHÁ ĐẢO TOÀN BỘ GAME!");
+            GameOver(true);
+        }
     }
 
     void GameOver(bool isWin)
     {
         isGameOver = true;
+        isPlaying = false;
         if (isWin) LoadingController.LoadScene("Result"); 
         else LoadingController.LoadScene("Result 1");
     }
